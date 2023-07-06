@@ -16,7 +16,7 @@ import Placeholder from './Placeholder/Placeholder';
 
 const html = document.querySelector('html');
 
-const App = props => {
+const App = () => {
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const [searchResults, setSearchResults] = useState([]);
@@ -43,12 +43,19 @@ const App = props => {
 
     async function fetchAPI() {
       const response = await fetchImages(query, page);
-      if (response.hits.length === 0) {
+      if (response.hits.length === 0 && page === 1) {
         Notify.warning(
           'Oops. Sorry, but there isn`t anything for this request! Try to find something different!'
         );
         setIsLoadMoreEnable(false);
-      } else {
+      }
+      else if (response.hits.length === 0 && page !== 1) {
+        Notify.warning(
+          'Sorry, but that`s all for your request =( Let`s search something else'
+        );
+        setIsLoadMoreEnable(false);
+      }
+      else {
         setSearchResults(prev => [...prev, ...response.hits]);
         setIsLoadMoreEnable(true);
       }
@@ -102,7 +109,6 @@ const App = props => {
           src={largeImage.src}
           alt={largeImage.alt}
           onCloseModal={onCloseModal}
-          isModalShow={isModalShow}
         />
       )}
     </div>
